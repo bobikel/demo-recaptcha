@@ -1,0 +1,64 @@
+/* Styles personnalisés pour le composant register */
+
+/* Animation pour les boutons toggle password */
+button[type="button"]:hover i {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Style personnalisé pour les focus states */
+input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Animation pour le bouton d'inscription */
+button[type="submit"]:active {
+  transform: translateY(1px);
+}
+
+/* Amélioration du contraste pour l'accessibilité */
+input::placeholder {
+  color: #9ca3af;
+}
+
+/* Smooth transitions */
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+/* Animation pour le formulaire */
+form {
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design pour les petits écrans */
+@media (max-width: 640px) {
+  .max-w-md {
+    max-width: 100%;
+    margin: 0 16px;
+  }
+  
+  form {
+    padding: 24px;
+  }
+}
+
+/* Validation states */
+input:valid {
+  border-color: #10b981;
+}
+
+input:invalid:not(:placeholder-shown) {
+  border-color: #ef4444;
+}

@@ -1,0 +1,106 @@
+<div class="min-h-screen flex">
+  <!-- Colonne gauche (70%) - Image -->
+  <div class="w-full lg:w-8/12 relative">
+    <img 
+      src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" 
+      alt="Login background" 
+      class="w-full h-full object-cover"
+    >
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-blue-600/70"></div>
+    <div class="absolute inset-0 flex items-center justify-center">
+      <div class="text-center text-white px-8">
+        <h1 class="text-5xl font-bold mb-4">Bienvenue</h1>
+        <p class="text-xl">Connectez-vous pour accéder à votre espace</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne droite (30%) - Formulaire -->
+  <div class="w-full lg:w-4/12 flex items-center justify-center bg-gray-50 p-8">
+    <div class="w-full max-w-sm">
+      <!-- Logo ou titre -->
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Connexion</h2>
+        <p class="text-gray-600 mt-2">Entrez vos identifiants</p>
+      </div>
+
+      <!-- Formulaire -->
+      <form class="space-y-6">
+        <!-- Champ Username -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+            Nom d'utilisateur
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              id="username" 
+              name="username"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              placeholder="Entrez votre nom d'utilisateur"
+              required
+            >
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <i class="fas fa-user text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Champ Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Mot de passe
+          </label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="password" 
+              name="password"
+              class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              placeholder="Entrez votre mot de passe"
+              required
+            >
+            <button 
+              type="button" 
+              (click)="togglePassword()"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+            >
+              <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Checkbox Active Directory -->
+        <div class="flex items-center">
+          <input 
+            type="checkbox" 
+            id="activeDirectory" 
+            name="activeDirectory"
+            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          >
+          <label for="activeDirectory" class="ml-2 block text-sm text-gray-700">
+            Active Directory
+          </label>
+        </div>
+
+        <!-- Bouton de connexion -->
+        <!-- <button 
+          type="submit"
+          class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium transition duration-200"
+        >
+          Se connecter
+        </button> -->
+        <div class="flex justify-end">
+          <p-button label="Se connecter" severity="help" [loading]="loading()" (onClick)="load()"></p-button>
+        </div>
+      </form>
+
+      <!-- Liens additionnels -->
+      <div class="mt-6 text-center">
+        <a href="#" class="text-sm text-blue-600 hover:text-blue-500">
+          Mot de passe oublié?
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
