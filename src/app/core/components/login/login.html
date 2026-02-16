@@ -83,14 +83,18 @@
           </label>
         </div>
 
+        <!-- reCAPTCHA -->
+        <div class="flex justify-center py-4">
+          <re-captcha id="recaptcha" name="recaptcha" #recaptcha="ngModel" [(ngModel)]="token" required [class.is-invalid]="recaptcha.invalid && (recaptcha.dirty || recaptcha.touched)"></re-captcha>
+        </div>
+        
+        <!-- reCAPTCHA Error Message -->
+        <div *ngIf="recaptcha.invalid && (recaptcha.dirty || recaptcha.touched)" class="text-center">
+          <div class="text-red-500 text-sm">Veuillez valider le reCAPTCHA</div>
+        </div>
+
         <!-- Bouton de connexion -->
-        <!-- <button 
-          type="submit"
-          class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium transition duration-200"
-        >
-          Se connecter
-        </button> -->
-        <div class="flex justify-end">
+        <div class="flex justify-end pt-4">
           <p-button label="Se connecter" severity="help" [loading]="loading()" (onClick)="load()"></p-button>
         </div>
       </form>
