@@ -25,7 +25,7 @@
       </div>
 
       <!-- Formulaire -->
-      <form class="space-y-6">
+      <form class="space-y-6" [formGroup]="loginForm">
         <!-- Champ Username -->
         <div>
           <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
@@ -39,7 +39,15 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
               placeholder="Entrez votre nom d'utilisateur"
               required
-            >
+              formControlName="username"
+            />
+             @if (username?.invalid && username?.touched) {
+              <div class="invalid-feedback">
+                @if (username?.errors?.['required']) {
+                  <span>Le nom d'utilisateur est requis</span>
+                }
+              </div>
+            }
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <i class="fas fa-user text-gray-400"></i>
             </div>
@@ -59,7 +67,16 @@
               class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
               placeholder="Entrez votre mot de passe"
               required
-            >
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+            />
+            @if (password?.invalid && password?.touched) {
+              <div class="invalid-feedback">
+                @if (password?.errors?.['required']) {
+                  <span>Le mot de passe est requis</span>
+                }
+              </div>
+            }
             <button 
               type="button" 
               (click)="togglePassword()"
@@ -77,6 +94,7 @@
             id="activeDirectory" 
             name="activeDirectory"
             class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            formControlName="isUseLdap"
           >
           <label for="activeDirectory" class="ml-2 block text-sm text-gray-700">
             Active Directory
@@ -84,26 +102,46 @@
         </div>
 
         <!-- reCAPTCHA -->
-        <div class="flex justify-center py-4">
-          <re-captcha id="recaptcha" name="recaptcha" #recaptcha="ngModel" [(ngModel)]="token" required [class.is-invalid]="recaptcha.invalid && (recaptcha.dirty || recaptcha.touched)"></re-captcha>
-        </div>
-        
-        <!-- reCAPTCHA Error Message -->
-        <div *ngIf="recaptcha.invalid && (recaptcha.dirty || recaptcha.touched)" class="text-center">
-          <div class="text-red-500 text-sm">Veuillez valider le reCAPTCHA</div>
-        </div>
+          <div class="recaptcha-container">
+            <re-captcha
+              (resolved)="onCaptchaResolved($event)"
+              (errored)="onCaptchaError($event)"
+            ></re-captcha>
+            @if (showCaptchaError()) {
+              <div class="captcha-error">
+                Veuillez compléter le captcha
+              </div>
+            }
+          </div>
+
+          <!-- Error message -->
+          @if (errorMessage()) {
+            <div class="alert alert-danger">
+              {{ errorMessage() }}
+            </div>
+          }
 
         <!-- Bouton de connexion -->
         <div class="flex justify-end pt-4">
-          <p-button label="Se connecter" severity="help" [loading]="loading()" (onClick)="load()"></p-button>
+          <p-button severity="help" [loading]="isLoading()" (onClick)="onSubmit()">
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              <span>Connexion en cours...</span>
+            } @else {
+              <span>Se connecter</span>
+            }
+          </p-button>
         </div>
       </form>
 
       <!-- Liens additionnels -->
       <div class="mt-6 text-center">
-        <a href="#" class="text-sm text-blue-600 hover:text-blue-500">
+        <a href="/forgot-password" class="text-sm text-blue-600 hover:text-blue-500">
           Mot de passe oublié?
         </a>
+      </div>
+      <div class="mt-6 text-center">
+        <a href="/register" class="text-sm text-blue-600 hover:text-blue-500">Créer un compte</a>
       </div>
     </div>
   </div>

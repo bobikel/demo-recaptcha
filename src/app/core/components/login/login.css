@@ -40,3 +40,108 @@ input::placeholder {
 * {
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
+
+/* Styles pour les messages d'erreur */
+.invalid-feedback {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* Styles pour les alertes */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.alert-danger {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+/* Styles pour le captcha */
+.recaptcha-container {
+  margin: 1rem 0;
+}
+
+.captcha-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.375rem;
+}
+
+/* Spinner animation */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Amélioration des styles des inputs */
+input {
+  transition: all 0.2s ease-in-out;
+}
+
+input:hover {
+  border-color: #d1d5db;
+}
+
+/* Styles pour les liens */
+a {
+  transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Amélioration du bouton p-button */
+p-button {
+  width: 100%;
+}
+
+p-button button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .w-full.lg\:w-4\/12 {
+    padding: 1rem;
+  }
+  
+  .max-w-sm {
+    width: 100%;
+  }
+  
+  .text-5xl {
+    font-size: 2.5rem;
+  }
+  
+  .text-xl {
+    font-size: 1rem;
+  }
+}

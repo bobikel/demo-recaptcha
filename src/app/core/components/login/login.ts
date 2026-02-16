@@ -1,10 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RECAPTCHA_LOADER_OPTIONS, RECAPTCHA_SETTINGS, RecaptchaErrorParameters, RecaptchaFormsModule, RecaptchaLoaderOptions, RecaptchaModule } from 'ng-recaptcha-2';
-import { ConfigService } from '../../services/config-service';
 import { environment } from '../../../../environments/environment';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth/auth';
 
 // Fonction globale pour parser la langue depuis l'URL
 function parseLangFromHref(): string | null {
@@ -77,7 +79,7 @@ function getDefaultLanguage(): string {
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ButtonModule, RecaptchaModule, RecaptchaFormsModule, FormsModule],
+  imports: [CommonModule, ButtonModule, RecaptchaModule, RecaptchaFormsModule, FormsModule, ReactiveFormsModule],
   providers: [{
   provide: RECAPTCHA_SETTINGS,
   useValue: {
@@ -88,53 +90,109 @@ function getDefaultLanguage(): string {
   styleUrl: './login.css',
 })
 export class Login {
-  token: string|undefined;
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
+  // Signals pour l'état du composant
+  recaptchaToken = signal<string | null>(null);
+  errorMessage = signal<string>('');
+  isLoading = signal<boolean>(false);
+  showCaptchaError = signal<boolean>(false);
+
+  // URL de retour après login
+  private returnUrl: string = '/dashboard';
+
+  loginForm: FormGroup;
   showPassword: boolean = false;
   loading = signal(false);
 
   constructor() {
-    console.log(environment.recaptcha.siteKey);
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      isUseLdap: [false]
+    });
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+  }
+
+  get username() {
+    return this.loginForm.get('username');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
+  }
+
+  get isUseLdap() {
+    return this.loginForm.get('isUseLdap');
+  }
+  
+  onCaptchaResolved(token: string | null): void {
+    console.log('Captcha résolu');
+    this.recaptchaToken.set(token);
+    this.showCaptchaError.set(false);
   }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
-    if (passwordInput) {
-      passwordInput.type = this.showPassword ? 'text' : 'password';
-    }
-  }
-
-  load() {
-    this.loading.set(true);
-    
-    setTimeout(() => {
-      this.loading.set(false);
-        }, 2000);
-    }
-
-  public resolved(form: NgForm): void {
-    if (form.invalid) {
-      for (const control of Object.keys(form.controls)) {
-        form.controls[control].markAsTouched();
-      }
-      return;
-    }
-
-    console.debug(`Token [${this.token}] generated`);
-  }
-
-  public onError(errorDetails: RecaptchaErrorParameters): void {
-    console.log(`reCAPTCHA error encountered; details:`, errorDetails);
   }
 
   /**
-   * Extrait la langue depuis l'URL de la page actuelle
-   * @returns string - Code de langue (ex: 'fr', 'en', 'es') ou langue par défaut
+   * Appelé en cas d'erreur du captcha
    */
-  getLanguageFromUrl(): string {
-    const lang = parseLangFromHref();
-    return lang || getDefaultLanguage();
+  onCaptchaError(error: any): void {
+    console.error('Erreur captcha:', error);
+    this.recaptchaToken.set(null);
+    this.errorMessage.set('Erreur lors du chargement du captcha. Veuillez rafraîchir la page.');
+  }
+
+  /**
+   * Soumission du formulaire
+   */
+  onSubmit(): void {
+    // Réinitialiser les erreurs
+    this.errorMessage.set('');
+    this.showCaptchaError.set(false);
+
+    // Vérifier que le formulaire est valide
+    if (this.loginForm.invalid) {
+      Object.keys(this.loginForm.controls).forEach(key => {
+        this.loginForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
+    // Vérifier que le captcha est résolu
+    if (!this.recaptchaToken()) {
+      this.showCaptchaError.set(true);
+      return;
+    }
+
+    // Activer le loading
+    this.isLoading.set(true);
+
+    // Appeler le service d'authentification
+    const { username, password } = this.loginForm.value;
+    
+    this.authService.login(username, password, this.recaptchaToken()!)
+      .subscribe({
+        next: (response) => {
+          console.log('Login réussi:', response);
+          this.isLoading.set(false);
+          
+          // Rediriger vers la page de retour
+          this.router.navigate([this.returnUrl]);
+        },
+        error: (error) => {
+          console.error('Erreur de login:', error);
+          this.isLoading.set(false);
+          this.errorMessage.set(error.message || 'Erreur lors de la connexion');
+          
+          // Réinitialiser le captcha pour permettre une nouvelle tentative
+          this.recaptchaToken.set(null);
+        }
+      });
   }
 }
-
